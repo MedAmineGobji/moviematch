@@ -1,0 +1,93 @@
+/* Barre de recherche */
+ion-searchbar {
+  --background: var(--surface);
+  --color: var(--texte);
+  --icon-color: var(--jaune);
+  --placeholder-color: var(--gris);
+  --border-radius: 999px;
+}
+
+/* Le ticket */
+.ticket {
+  position: relative;
+  display: flex;
+  min-height: 150px;
+  margin-bottom: 20px;
+  background: var(--surface);
+  border-radius: 10px;
+}
+
+/* Les deux encoches rondes entre l'affiche et les infos */
+.ticket::before,
+.ticket::after {
+  content: '';
+  position: absolute;
+  left: 101px;
+  width: 22px;
+  height: 22px;
+  margin-left: -11px;
+  background: var(--fond);
+  border-radius: 50%;
+}
+.ticket::before { top: -11px; }
+.ticket::after { bottom: -11px; }
+
+/* L'affiche (le talon du ticket) */
+.ticket-affiche {
+  width: 100px;
+  flex-shrink: 0;
+  object-fit: cover;
+  border-radius: 10px 0 0 10px;
+}
+.ticket-affiche.vide {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-2);
+  color: var(--gris);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 40px;
+}
+
+/* La partie infos, séparée par des pointillés */
+.ticket-corps {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 12px 16px;
+  border-left: 2px dashed var(--fond);
+}
+
+.ticket-numero {
+  color: var(--jaune);
+  font-size: 12px;
+  letter-spacing: 2px;
+}
+
+.ticket-titre {
+  margin: 4px 0;
+  font-size: 24px;
+  line-height: 1;
+  color: var(--texte);
+}
+
+.ticket-genres {
+  margin: 0;
+  font-size: 13px;
+  color: var(--gris);
+}
+
+/* Bas du ticket : année et note */
+.ticket-talon {
+  margin-top: auto;
+  padding-top: 10px;
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid var(--surface-2);
+  font-size: 14px;
+}
+.ticket-talon .note {
+  color: var(--jaune);
+  font-weight: 700;
+}
