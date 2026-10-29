@@ -2,11 +2,14 @@
 const API_KEY = import.meta.env.VITE_TMDB_KEY;
 const BASE = 'https://api.themoviedb.org/3';
 export const IMG = 'https://image.tmdb.org/t/p/w342';
+// Grande taille pour les images de fond (bannière, détail)
+export const IMG_GRAND = 'https://image.tmdb.org/t/p/w1280';
 
 export interface FilmTMDB {
   id: number;
   title: string;
   poster_path: string | null;
+  backdrop_path: string | null;
   release_date: string;
   genre_ids: number[];
   vote_average: number;
@@ -32,6 +35,18 @@ export async function filmsPopulaires(): Promise<FilmTMDB[]> {
   return data.results;
 }
 
+// Films les mieux notés
+export async function filmsMieuxNotes(): Promise<FilmTMDB[]> {
+  const data = await appel('/movie/top_rated');
+  return data.results;
+}
+
+// Films qui sortent bientôt
+export async function filmsAVenir(): Promise<FilmTMDB[]> {
+  const data = await appel('/movie/upcoming');
+  return data.results;
+}
+
 // Recherche par titre
 export async function rechercherFilms(texte: string): Promise<FilmTMDB[]> {
   const data = await appel('/search/movie', { query: texte });
@@ -47,8 +62,29 @@ export async function listeGenres(): Promise<Record<number, string>> {
   });
   return genres;
 }
+
 // Les 5 acteurs principaux d'un film
 export async function acteursDuFilm(id: number): Promise<string[]> {
   const data = await appel(`/movie/${id}/credits`);
   return data.cast.slice(0, 5).map((a: { name: string }) => a.name);
+}
+
+// Donne l'adresse complète d'une affiche (chemin TMDB ou lien complet)
+export function urlAffiche(affiche: string | null): string | null {
+  if (!affiche) return null;
+  return affiche.startsWith('http') ? affiche : IMG + affiche;
+}
+
+// Adresse de l'image de fond en grande taille (null si le film n'en a pas)
+export function urlFond(fond: string | null | undefined): string | null {
+  return fond ? IMG_GRAND + fond : null;
+}
+
+// Vrai si le film est sorti il y a moins de 30 jours (date au format AAAA-MM-JJ)
+export function estNouveau(dateSortie: string | undefined, maintenant = Date.now()): boolean {
+  if (!dateSortie) return false;
+  const sortie = new Date(dateSortie).getTime();
+  if (Number.isNaN(sortie)) return false;
+  const ecart = maintenant - sortie;
+  return ecart >= 0 && ecart < 30 * 24 * 60 * 60 * 1000;
 }

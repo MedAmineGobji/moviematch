@@ -45,6 +45,23 @@ describe('tmdb.ts', () => {
     expect(resultat).toEqual(films);
   });
 
+  it.each([
+    ['filmsMieuxNotes', '/3/movie/top_rated', () => tmdb.filmsMieuxNotes()],
+    ['filmsAVenir', '/3/movie/upcoming', () => tmdb.filmsAVenir()],
+  ])('%s appelle %s avec api_key et language=fr-FR', async (_nom, chemin, appel) => {
+    const films = [{ id: 5, title: 'Film E' }];
+    fetchMock.mockResolvedValue(reponseOk({ results: films }));
+
+    const resultat = await appel();
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    const url = urlAppelee();
+    expect(url.pathname).toBe(chemin);
+    expect(url.searchParams.get('api_key')).toBe('cle-de-test');
+    expect(url.searchParams.get('language')).toBe('fr-FR');
+    expect(resultat).toEqual(films);
+  });
+
   it('rechercherFilms appelle /search/movie avec le paramètre query', async () => {
     const films = [{ id: 2, title: 'Matrix' }];
     fetchMock.mockResolvedValue(reponseOk({ results: films }));
@@ -96,6 +113,8 @@ describe('tmdb.ts', () => {
     ['rechercherFilms', () => tmdb.rechercherFilms('x')],
     ['listeGenres', () => tmdb.listeGenres()],
     ['acteursDuFilm', () => tmdb.acteursDuFilm(1)],
+    ['filmsMieuxNotes', () => tmdb.filmsMieuxNotes()],
+    ['filmsAVenir', () => tmdb.filmsAVenir()],
   ])('%s lève une erreur si la réponse n\'est pas ok', async (_nom, appel) => {
     fetchMock.mockResolvedValue({ ok: false, status: 401, json: () => Promise.resolve({}) });
     await expect(appel()).rejects.toThrow('Erreur TMDB 401');
@@ -104,6 +123,52 @@ describe('tmdb.ts', () => {
   it('propage une erreur réseau de fetch', async () => {
     fetchMock.mockRejectedValue(new TypeError('Failed to fetch'));
     await expect(tmdb.filmsPopulaires()).rejects.toThrow('Failed to fetch');
+  });
+});
+
+describe('tmdb.ts — urlAffiche', () => {
+  it('ajoute l\'adresse TMDB devant un chemin', () => {
+    expect(tmdb.urlAffiche('/abc.jpg')).toBe('https://image.tmdb.org/t/p/w342/abc.jpg');
+  });
+
+  it('garde tel quel un lien complet (film de la sélection)', () => {
+    expect(tmdb.urlAffiche('https://exemple.fr/affiche.jpg')).toBe('https://exemple.fr/affiche.jpg');
+  });
+
+  it('renvoie null sans affiche', () => {
+    expect(tmdb.urlAffiche(null)).toBeNull();
+    expect(tmdb.urlAffiche('')).toBeNull();
+  });
+});
+
+describe('tmdb.ts — urlFond', () => {
+  it('ajoute l\'adresse TMDB en grande taille (w1280)', () => {
+    expect(tmdb.IMG_GRAND).toBe('https://image.tmdb.org/t/p/w1280');
+    expect(tmdb.urlFond('/fond.jpg')).toBe('https://image.tmdb.org/t/p/w1280/fond.jpg');
+  });
+
+  it('renvoie null sans image de fond', () => {
+    expect(tmdb.urlFond(null)).toBeNull();
+    expect(tmdb.urlFond(undefined)).toBeNull();
+    expect(tmdb.urlFond('')).toBeNull();
+  });
+});
+
+describe('tmdb.ts — estNouveau', () => {
+  const MAINTENANT = new Date('2026-06-15T12:00:00Z').getTime();
+
+  it.each([
+    ['2026-06-15', true],
+    ['2026-06-05', true],
+    ['2026-05-17', true],
+    ['2026-05-15', false],
+    ['2020-01-01', false],
+    ['2026-06-20', false],
+    ['', false],
+    [undefined, false],
+    ['pas une date', false],
+  ])('estNouveau(%s) = %s', (date, attendu) => {
+    expect(tmdb.estNouveau(date, MAINTENANT)).toBe(attendu);
   });
 });
 
