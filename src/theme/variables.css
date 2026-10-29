@@ -1,84 +1,132 @@
-/* ===== Thème inspiré cinéma : noir et jaune doré ===== */
+/* ===== Thème Movie Match : noir chaud et jaune ===== */
 :root {
   /* Nos couleurs */
-  --fond: #0d0d0d;
-  --surface: #1a1a1a;
-  --surface-2: #262626;
-  --jaune: #ffc629;
+  --fond: #160b0b;
+  --surface: #241515;
+  --surface-2: #3a2222;
+  --jaune: #ffc31f;
+  --rouge: #e30613;
   --orange: #f28c28;
-  --texte: #f5f5f0;
-  --gris: #8a8a8a;
+  --texte: #ffffff;
+  --gris: #b8a9a9;
 
   /* Polices */
-  --ion-font-family: 'Archivo', sans-serif;
+  --ion-font-family: 'Montserrat', sans-serif;
 
   /* Fond et texte */
-  --ion-background-color: #0d0d0d;
-  --ion-background-color-rgb: 13, 13, 13;
-  --ion-text-color: #f5f5f0;
-  --ion-text-color-rgb: 245, 245, 240;
+  --ion-background-color: #160b0b;
+  --ion-background-color-rgb: 22, 11, 11;
+  --ion-text-color: #ffffff;
+  --ion-text-color-rgb: 255, 255, 255;
 
-  /* Couleur principale : jaune doré */
-  --ion-color-primary: #ffc629;
-  --ion-color-primary-rgb: 255, 198, 41;
-  --ion-color-primary-contrast: #0d0d0d;
-  --ion-color-primary-contrast-rgb: 13, 13, 13;
-  --ion-color-primary-shade: #e0ae24;
-  --ion-color-primary-tint: #ffcc3e;
+  /* Couleur principale : jaune (actions) */
+  --ion-color-primary: #ffc31f;
+  --ion-color-primary-rgb: 255, 195, 31;
+  --ion-color-primary-contrast: #160b0b;
+  --ion-color-primary-contrast-rgb: 22, 11, 11;
+  --ion-color-primary-shade: #e0ac1b;
+  --ion-color-primary-tint: #ffc935;
 
-  /* Couleur secondaire : orange */
-  --ion-color-secondary: #f28c28;
-  --ion-color-secondary-rgb: 242, 140, 40;
-  --ion-color-secondary-contrast: #0d0d0d;
-  --ion-color-secondary-contrast-rgb: 13, 13, 13;
-  --ion-color-secondary-shade: #d57b23;
-  --ion-color-secondary-tint: #f3983e;
+  /* Couleur secondaire : rouge (étiquettes) */
+  --ion-color-secondary: #e30613;
+  --ion-color-secondary-rgb: 227, 6, 19;
+  --ion-color-secondary-contrast: #ffffff;
+  --ion-color-secondary-contrast-rgb: 255, 255, 255;
+  --ion-color-secondary-shade: #c80511;
+  --ion-color-secondary-tint: #e61f2b;
+
+  /* Erreurs : rouge clair, lisible sur le fond sombre */
+  --ion-color-danger: #ff6b6b;
+  --ion-color-danger-rgb: 255, 107, 107;
+  --ion-color-danger-contrast: #160b0b;
+  --ion-color-danger-contrast-rgb: 22, 11, 11;
+  --ion-color-danger-shade: #e05e5e;
+  --ion-color-danger-tint: #ff7a7a;
 
   /* Barres du haut et du bas */
-  --ion-toolbar-background: #0d0d0d;
-  --ion-toolbar-color: #f5f5f0;
-  --ion-toolbar-border-color: #262626;
-  --ion-tab-bar-background: #0d0d0d;
-  --ion-tab-bar-border-color: #262626;
-  --ion-tab-bar-color: #8a8a8a;
-  --ion-tab-bar-color-selected: #ffc629;
+  --ion-toolbar-background: #160b0b;
+  --ion-toolbar-color: #ffffff;
+  --ion-toolbar-border-color: #3a2222;
+  --ion-tab-bar-background: #160b0b;
+  --ion-tab-bar-border-color: rgba(255, 255, 255, 0.08);
+  --ion-tab-bar-color: #b8a9a9;
+  --ion-tab-bar-color-selected: #ffc31f;
 
   /* Listes, cartes, champs */
-  --ion-item-background: #1a1a1a;
-  --ion-card-background: #1a1a1a;
-  --ion-border-color: #262626;
-  --ion-placeholder-color: #8a8a8a;
+  --ion-item-background: #241515;
+  --ion-card-background: #241515;
+  --ion-border-color: #3a2222;
+  --ion-placeholder-color: #b8a9a9;
 }
 
-/* Titres façon affiche */
+body {
+  background: var(--fond);
+  font-weight: 500;
+}
+
+/* Titres : Montserrat 800, casse normale */
 ion-title,
 h1, h2, h3 {
-  font-family: 'Bebas Neue', sans-serif;
-  font-weight: 400;
-  letter-spacing: 2px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 800;
+  letter-spacing: normal;
+  text-transform: none;
 }
 
 ion-title {
-  font-size: 26px;
+  font-size: 20px;
 }
 
-/* Boutons arrondis, texte en majuscules */
+/* Boutons : arrondi 6px, gras, casse normale, icône à gauche */
 ion-button {
-  --border-radius: 999px;
+  --border-radius: 6px;
   --box-shadow: none;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: normal;
 }
 
-/* Libellés des onglets */
+/* Bouton secondaire : fond blanc transparent, texte blanc */
+ion-button.bouton-secondaire {
+  --background: rgba(255, 255, 255, 0.12);
+  --background-hover: rgba(255, 255, 255, 0.2);
+  --background-activated: rgba(255, 255, 255, 0.24);
+  --background-focused: rgba(255, 255, 255, 0.2);
+  --color: #ffffff;
+}
+
+/* Barre d'onglets : bordure haute discrète */
+ion-tab-bar {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
 ion-tab-button ion-label {
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  font-weight: 600;
+  text-transform: none;
+  letter-spacing: normal;
+  font-weight: 700;
+}
+
+/* Logo texte : "Movie" en blanc, "Match" en jaune */
+.logo {
+  margin: 0;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 800;
+  font-size: 22px;
+  line-height: 1;
+  color: var(--texte);
+}
+
+.logo-match {
+  color: var(--jaune);
 }
 
 /* Petit texte type machine à écrire (pour les tickets) */
 .mono {
   font-family: 'Courier Prime', monospace;
+}
+
+/* Logo en grand sur les pages Connexion et Inscription */
+.logo-accueil {
+  margin: 24px 0 28px;
+  font-size: 36px;
 }

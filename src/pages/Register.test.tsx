@@ -65,6 +65,13 @@ beforeEach(() => {
 });
 
 describe('Register', () => {
+  it('affiche le logo Movie Match en haut', () => {
+    render(<Register />);
+
+    expect(screen.getByRole('heading', { level: 1, name: 'Movie Match' })).toHaveClass('logo');
+    expect(screen.getByText('Match')).toHaveClass('logo-match');
+  });
+
   it('affiche une erreur si le formulaire est vide', () => {
     render(<Register />);
     fireEvent.click(screen.getByText("S'inscrire"));

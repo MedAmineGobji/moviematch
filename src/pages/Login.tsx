@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import {
   IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonInput,
-  IonButton, IonList, IonItem, IonText, IonLoading,
+  IonButton, IonList, IonItem, IonText, IonLoading, IonIcon,
 } from '@ionic/react';
+import { logInOutline } from 'ionicons/icons';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebase';
 import { useAuth } from '../AuthContext';
@@ -42,7 +43,9 @@ const Login: React.FC = () => {
         </IonToolbar>
       </IonHeader>
       <IonContent className="ion-padding">
-        <h1 className="ion-text-center">🎬 Movie Match</h1>
+        <h1 className="logo logo-accueil ion-text-center">
+          Movie <span className="logo-match">Match</span>
+        </h1>
         <IonList>
           <IonItem>
             <IonInput label="E-mail" labelPlacement="floating" type="email" value={email}
@@ -58,7 +61,10 @@ const Login: React.FC = () => {
           <IonText color="danger"><p>{erreur || messageDeconnexion}</p></IonText>
         )}
 
-        <IonButton expand="block" onClick={connecter}>Se connecter</IonButton>
+        <IonButton expand="block" onClick={connecter}>
+          <IonIcon slot="start" icon={logInOutline} aria-hidden="true" />
+          Se connecter
+        </IonButton>
         <IonButton expand="block" fill="clear" routerLink="/register">
           Pas de compte ? S'inscrire
         </IonButton>

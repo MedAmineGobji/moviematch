@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import {
   IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonInput,
-  IonButton, IonList, IonItem, IonText, IonLoading,
+  IonButton, IonList, IonItem, IonText, IonLoading, IonIcon,
 } from '@ionic/react';
+import { cameraOutline, personAddOutline } from 'ionicons/icons';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { createUserWithEmailAndPassword, deleteUser } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
@@ -86,14 +87,18 @@ const Register: React.FC = () => {
         </IonToolbar>
       </IonHeader>
       <IonContent className="ion-padding">
+        <h1 className="logo logo-accueil ion-text-center">
+          Movie <span className="logo-match">Match</span>
+        </h1>
         <div className="ion-text-center">
           {photo ? (
             <img src={photo} alt="photo" style={{ width: 120, height: 120, borderRadius: '50%', objectFit: 'cover' }} />
           ) : (
-            <div style={{ width: 120, height: 120, borderRadius: '50%', background: '#ddd', margin: 'auto' }} />
+            <div style={{ width: 120, height: 120, borderRadius: '50%', background: 'var(--surface-2)', margin: 'auto' }} />
           )}
           <br />
-          <IonButton size="small" onClick={prendrePhoto}>
+          <IonButton size="small" className="bouton-secondaire" onClick={prendrePhoto}>
+            <IonIcon slot="start" icon={cameraOutline} aria-hidden="true" />
             {photo ? 'Reprendre la photo' : 'Prendre une photo'}
           </IonButton>
         </div>
@@ -123,7 +128,10 @@ const Register: React.FC = () => {
 
         {erreur && <IonText color="danger"><p>{erreur}</p></IonText>}
 
-        <IonButton expand="block" onClick={inscrire}>S'inscrire</IonButton>
+        <IonButton expand="block" onClick={inscrire}>
+          <IonIcon slot="start" icon={personAddOutline} aria-hidden="true" />
+          S'inscrire
+        </IonButton>
         <IonButton expand="block" fill="clear" routerLink="/login">
           Déjà un compte ? Se connecter
         </IonButton>

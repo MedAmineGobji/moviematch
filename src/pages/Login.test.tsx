@@ -53,7 +53,10 @@ describe('Login', () => {
   it('affiche le formulaire de connexion', () => {
     render(<Login />);
 
-    expect(screen.getByText('🎬 Movie Match')).toBeInTheDocument();
+    // Logo texte : "Movie" en blanc, "Match" en jaune
+    const logo = screen.getByRole('heading', { level: 1, name: 'Movie Match' });
+    expect(logo).toHaveClass('logo');
+    expect(screen.getByText('Match')).toHaveClass('logo-match');
     expect(screen.getByLabelText('E-mail')).toHaveAttribute('type', 'email');
     expect(screen.getByLabelText('Mot de passe')).toHaveAttribute('type', 'password');
     expect(screen.getByText('Se connecter')).toBeInTheDocument();
