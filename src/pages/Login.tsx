@@ -3,28 +3,33 @@ import {
   IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonInput,
   IonButton, IonList, IonItem, IonText, IonLoading,
 } from '@ionic/react';
-import { signInWithEmailAndPassword, signOut } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
-import { auth, db } from '../firebase';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../firebase';
+import { useAuth } from '../AuthContext';
+
+const messagesErreur: Record<string, string> = {
+  'auth/invalid-credential': 'E-mail ou mot de passe incorrect.',
+  'auth/invalid-email': "L'adresse e-mail n'est pas valide.",
+  'auth/too-many-requests': 'Trop de tentatives. Réessaie dans quelques minutes.',
+  'auth/network-request-failed': 'Pas de connexion internet.',
+};
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [motDePasse, setMotDePasse] = useState('');
   const [erreur, setErreur] = useState('');
   const [chargement, setChargement] = useState(false);
+  const { messageDeconnexion } = useAuth();
 
   const connecter = async () => {
     setErreur('');
     setChargement(true);
     try {
-      const cred = await signInWithEmailAndPassword(auth, email, motDePasse);
-      const snap = await getDoc(doc(db, 'users', cred.user.uid));
-      if (snap.exists() && snap.data().actif === false) {
-        await signOut(auth);
-        setErreur("Ton compte a été désactivé par l'administrateur.");
-      }
-    } catch {
-      setErreur('E-mail ou mot de passe incorrect.');
+      // Un compte désactivé est déconnecté par AuthContext (messageDeconnexion)
+      await signInWithEmailAndPassword(auth, email.trim(), motDePasse);
+    } catch (e) {
+      const code = (e as { code?: string }).code ?? '';
+      setErreur(messagesErreur[code] ?? 'Connexion impossible, réessaie.');
     }
     setChargement(false);
   };
@@ -49,7 +54,9 @@ const Login: React.FC = () => {
           </IonItem>
         </IonList>
 
-        {erreur && <IonText color="danger"><p>{erreur}</p></IonText>}
+        {(erreur || messageDeconnexion) && (
+          <IonText color="danger"><p>{erreur || messageDeconnexion}</p></IonText>
+        )}
 
         <IonButton expand="block" onClick={connecter}>Se connecter</IonButton>
         <IonButton expand="block" fill="clear" routerLink="/register">

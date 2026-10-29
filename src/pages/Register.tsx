@@ -4,7 +4,7 @@ import {
   IonButton, IonList, IonItem, IonText, IonLoading,
 } from '@ionic/react';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, deleteUser } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 
@@ -40,25 +40,40 @@ const Register: React.FC = () => {
 
   const inscrire = async () => {
     setErreur('');
-    if (!nom || !prenom || !age || !email || !motDePasse || !photo) {
+    const nomPropre = nom.trim();
+    const prenomPropre = prenom.trim();
+    const emailPropre = email.trim();
+    if (!nomPropre || !prenomPropre || !age || !emailPropre || !motDePasse || !photo) {
       setErreur('Remplis tous les champs et prends une photo.');
+      return;
+    }
+    const ageNombre = Number(age);
+    if (!Number.isInteger(ageNombre) || ageNombre < 10 || ageNombre > 120) {
+      setErreur("L'âge doit être un nombre entre 10 et 120.");
       return;
     }
     setChargement(true);
     try {
-      const cred = await createUserWithEmailAndPassword(auth, email, motDePasse);
-      await setDoc(doc(db, 'users', cred.user.uid), {
-        nom,
-        prenom,
-        age: Number(age),
-        photo,
-        email,
-        role: 'user',
-        actif: true,
-        favoris: [],
-      });
-    } catch (e: any) {
-      setErreur(messagesErreur[e.code] ?? "Erreur lors de l'inscription.");
+      const cred = await createUserWithEmailAndPassword(auth, emailPropre, motDePasse);
+      try {
+        await setDoc(doc(db, 'users', cred.user.uid), {
+          nom: nomPropre,
+          prenom: prenomPropre,
+          age: ageNombre,
+          photo,
+          email: emailPropre,
+          role: 'user',
+          actif: true,
+          favoris: [],
+        });
+      } catch (e) {
+        // Le profil n'a pas pu être créé : on supprime le compte pour ne pas le laisser orphelin
+        await deleteUser(cred.user).catch(() => {});
+        throw e;
+      }
+    } catch (e) {
+      const code = (e as { code?: string }).code ?? '';
+      setErreur(messagesErreur[code] ?? "Erreur lors de l'inscription.");
     }
     setChargement(false);
   };

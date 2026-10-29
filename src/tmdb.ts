@@ -15,6 +15,7 @@ export interface FilmTMDB {
 
 // Fonction générique pour appeler TMDB
 async function appel(chemin: string, params: Record<string, string> = {}) {
+  if (!API_KEY) throw new Error('Clé TMDB manquante : ajoute VITE_TMDB_KEY dans le fichier .env');
   const url = new URL(BASE + chemin);
   url.searchParams.set('api_key', API_KEY);
   url.searchParams.set('language', 'fr-FR');
@@ -45,4 +46,9 @@ export async function listeGenres(): Promise<Record<number, string>> {
     genres[g.id] = g.name;
   });
   return genres;
+}
+// Les 5 acteurs principaux d'un film
+export async function acteursDuFilm(id: number): Promise<string[]> {
+  const data = await appel(`/movie/${id}/credits`);
+  return data.cast.slice(0, 5).map((a: { name: string }) => a.name);
 }
