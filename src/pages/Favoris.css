@@ -1,0 +1,59 @@
+/* Tableau de stats en haut */
+.stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.stat {
+  min-width: 0;
+  padding: 12px;
+  background: var(--surface);
+  border-left: 3px solid var(--jaune);
+  border-radius: 6px;
+}
+
+.stat-label {
+  font-family: 'Courier Prime', monospace;
+  font-size: 12px;
+  color: var(--gris);
+}
+
+.stat-valeur {
+  margin-top: 4px;
+  font-weight: 800;
+  font-size: 18px;
+  line-height: 1.1;
+  color: var(--texte);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stat.principal .stat-valeur {
+  font-size: 32px;
+  color: var(--jaune);
+}
+
+/* Liste des acteurs sur le ticket */
+.ticket-acteurs {
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: var(--gris);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Collection vide */
+.collection-vide {
+  padding: 80px 20px;
+  text-align: center;
+  color: var(--gris);
+}
+
+.collection-vide h2 {
+  font-size: 26px;
+  color: var(--texte);
+}
