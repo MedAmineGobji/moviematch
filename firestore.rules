@@ -1,0 +1,73 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===== Fonctions utiles =====
+
+    // L'utilisateur est connecté avec Firebase Auth
+    function connecte() {
+      return request.auth != null;
+    }
+
+    // Le profil Firestore de l'utilisateur connecté
+    function monProfil() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function estAdmin() {
+      return connecte() && monProfil().role == 'admin';
+    }
+
+    function estActif() {
+      return connecte() && monProfil().actif == true;
+    }
+
+    // Actif, ou profil pas encore créé (juste après l'inscription, la page Films
+    // démarre avant la fin de setDoc) : seul un compte désactivé est refusé
+    function pasDesactive() {
+      return connecte()
+        && (!exists(/databases/$(database)/documents/users/$(request.auth.uid)) || estActif());
+    }
+
+    // Les champs modifiés par la mise à jour sont uniquement ceux de la liste
+    function modifieSeulement(champs) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(champs);
+    }
+
+    // ===== Profils des membres =====
+    match /users/{uid} {
+      // Lecture :
+      // - son propre profil, toujours (à l'inscription il n'existe pas encore,
+      //   et un compte désactivé doit le lire pour être déconnecté avec le message)
+      // - les autres profils, seulement si on est actif (matching, admin)
+      allow read: if connecte() && (request.auth.uid == uid || estActif());
+
+      // Création : seulement son propre profil, en simple membre actif
+      allow create: if connecte()
+        && request.auth.uid == uid
+        && request.resource.data.role == 'user'
+        && request.resource.data.actif == true;
+
+      // Mise à jour :
+      // - par soi-même, si le compte est actif, et seulement la liste des favoris
+      // - par un admin, seulement le champ actif, et jamais celui d'un autre admin
+      allow update: if (connecte() && request.auth.uid == uid && estActif() && modifieSeulement(['favoris']))
+        || (estAdmin() && resource.data.role != 'admin' && modifieSeulement(['actif']));
+
+      // On ne supprime jamais un profil
+      allow delete: if false;
+    }
+
+    // ===== Sélection de films de l'admin =====
+    match /films/{id} {
+      allow read: if pasDesactive();
+      allow write: if estAdmin();
+    }
+
+    // ===== Tout le reste est interdit =====
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
