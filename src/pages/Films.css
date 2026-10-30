@@ -1,112 +1,422 @@
-/* Barre de recherche */
-ion-searchbar {
-  --background: var(--surface);
-  --color: var(--texte);
-  --icon-color: var(--jaune);
-  --placeholder-color: var(--gris);
-  --border-radius: 999px;
-}
+/* ===== Page Films : accueil façon site de cinéma ===== */
 
-/* Le ticket */
-.ticket {
+.films-accueil,
+.films-recherche {
   position: relative;
-  display: flex;
-  min-height: 150px;
-  margin-bottom: 20px;
-  background: var(--surface);
-  border-radius: 10px;
+  padding-bottom: 32px;
+  overflow-x: hidden;
 }
 
-/* Les deux encoches rondes entre l'affiche et les infos */
-.ticket::before,
-.ticket::after {
-  content: '';
-  position: absolute;
-  left: 101px;
-  width: 22px;
-  height: 22px;
-  margin-left: -11px;
-  background: var(--fond);
-  border-radius: 50%;
+/* Sans bannière (chargement, erreur), on laisse la place à l'en-tête */
+.films-accueil.sans-banniere {
+  padding-top: calc(env(safe-area-inset-top) + 72px);
 }
-.ticket::before { top: -11px; }
-.ticket::after { bottom: -11px; }
 
-/* L'affiche (le talon du ticket) */
-.ticket-affiche {
-  width: 100px;
+.films-message {
+  margin: 16px;
+  color: var(--gris);
+}
+
+/* Bouton rond avec une seule icône (loupe, retour, fermer) */
+.bouton-rond {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
   flex-shrink: 0;
-  object-fit: cover;
-  border-radius: 10px 0 0 10px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(22, 11, 11, 0.55);
+  color: var(--texte);
+  font-size: 20px;
+  cursor: pointer;
 }
-.ticket-affiche.vide {
+
+.bouton-rond:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.bouton-rond:focus-visible,
+.carte-ouvrir:focus-visible,
+.carte-coeur:focus-visible {
+  outline: 2px solid var(--jaune);
+  outline-offset: 2px;
+}
+
+/* ----- En-tête transparent posé sur la bannière ----- */
+.films-entete {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
   display: flex;
   align-items: center;
-  justify-content: center;
-  background: var(--surface-2);
-  color: var(--gris);
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 40px;
+  justify-content: space-between;
+  padding: calc(env(safe-area-inset-top) + 12px) 16px 24px;
+  background: linear-gradient(to bottom, rgba(22, 11, 11, 0.85), transparent);
 }
 
-/* La partie infos, séparée par des pointillés */
-.ticket-corps {
-  flex: 1;
-  min-width: 0;
+/* ----- Bannière ----- */
+.banniere {
+  position: relative;
   display: flex;
-  flex-direction: column;
-  padding: 12px 16px;
-  border-left: 2px dashed var(--fond);
+  align-items: flex-end;
+  min-height: 420px;
+  height: 64vh;
+  max-height: 640px;
+  overflow: hidden;
 }
 
-.ticket-numero {
-  color: var(--jaune);
-  font-size: 12px;
-  letter-spacing: 2px;
+.banniere-fond {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
 }
 
-.ticket-titre {
-  margin: 4px 0;
-  font-size: 24px;
-  line-height: 1;
+/* Dégradé vers le fond, en bas et à gauche, pour que le texte reste lisible */
+.banniere-degrade {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to top, var(--fond) 0%, rgba(22, 11, 11, 0.7) 30%, rgba(22, 11, 11, 0) 65%),
+    linear-gradient(to right, rgba(22, 11, 11, 0.85) 0%, rgba(22, 11, 11, 0) 70%);
+}
+
+.banniere-contenu {
+  position: relative;
+  width: 100%;
+  max-width: 680px;
+  padding: 0 16px 8px;
+}
+
+.banniere-titre {
+  margin: 0 0 8px;
+  font-size: clamp(32px, 9vw, 64px);
+  line-height: 1.05;
+  overflow-wrap: anywhere;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.banniere-infos {
+  margin: 0 0 16px;
+  font-size: 14px;
   color: var(--texte);
+  opacity: 0.85;
 }
 
-.ticket-genres {
+.banniere-boutons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.banniere-boutons ion-button {
+  margin: 0;
+}
+
+/* ----- Rangées horizontales ----- */
+.rangee {
+  margin-top: 28px;
+}
+
+.rangee-titre {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 12px;
+  padding: 0 16px;
+  font-size: 19px;
+}
+
+.chevron {
+  color: var(--jaune);
+  font-size: 26px;
+  line-height: 1;
+}
+
+.rangee-liste {
+  display: flex;
+  gap: 12px;
+  padding: 0 16px 4px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-padding: 0 16px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.rangee-liste::-webkit-scrollbar {
+  display: none;
+}
+
+.rangee-liste .carte {
+  flex: 0 0 128px;
+  scroll-snap-align: start;
+}
+
+@media (min-width: 768px) {
+  .rangee-liste .carte {
+    flex-basis: 160px;
+  }
+}
+
+/* ----- Carte d'affiche ----- */
+.carte {
+  min-width: 0;
+}
+
+.carte-affiche {
+  position: relative;
+  aspect-ratio: 2 / 3;
+  overflow: hidden;
+  border-radius: 6px;
+  background: var(--surface-2);
+}
+
+.carte-ouvrir {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.carte-ouvrir img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.2s;
+}
+
+.carte-ouvrir:hover img {
+  transform: scale(1.04);
+}
+
+.carte-vide {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--gris);
+}
+
+.etiquette-nouveau {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  padding: 3px 6px;
+  border-radius: 4px;
+  background: var(--rouge);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 800;
+  pointer-events: none;
+}
+
+.carte-coeur {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(22, 11, 11, 0.75);
+  color: var(--texte);
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.carte-coeur.actif {
+  background: var(--jaune);
+  color: var(--fond);
+}
+
+.carte-coeur:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.carte-titre {
+  margin: 8px 0 2px;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.25;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.carte-annee {
   margin: 0;
   font-size: 13px;
   color: var(--gris);
 }
 
-/* Bas du ticket : année et note */
-.ticket-talon {
-  margin-top: auto;
-  padding-top: 10px;
+/* ----- Mode recherche ----- */
+.recherche-barre {
+  position: sticky;
+  top: 0;
+  z-index: 2;
   display: flex;
-  justify-content: space-between;
-  border-top: 1px solid var(--surface-2);
-  font-size: 14px;
+  align-items: center;
+  gap: 8px;
+  padding: calc(env(safe-area-inset-top) + 8px) 12px 8px;
+  background: var(--fond);
 }
-.ticket-talon .note {
+
+.recherche-barre .bouton-rond {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.recherche-barre ion-searchbar {
+  padding: 0;
+  --background: var(--surface);
+  --color: var(--texte);
+  --icon-color: var(--jaune);
+  --placeholder-color: var(--gris);
+  --border-radius: 6px;
+}
+
+.grille {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px 12px;
+  padding: 8px 16px 0;
+}
+
+@media (min-width: 576px) {
+  .grille { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (min-width: 768px) {
+  .grille { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+@media (min-width: 1024px) {
+  .grille { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+}
+
+/* ----- Détail d'un film (modal) ----- */
+.modal-detail {
+  --background: var(--fond);
+}
+
+@media (min-width: 768px) {
+  .modal-detail {
+    --width: min(720px, 92vw);
+    --height: min(88vh, 860px);
+    --border-radius: 10px;
+  }
+}
+
+.detail-haut {
+  position: relative;
+  height: 230px;
+  background: var(--surface);
+}
+
+@media (min-width: 768px) {
+  .detail-haut { height: 320px; }
+}
+
+.detail-fond {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.detail-degrade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, var(--fond) 0%, rgba(22, 11, 11, 0.3) 60%, rgba(22, 11, 11, 0.5) 100%);
+}
+
+.detail-fermer {
+  position: absolute;
+  top: calc(env(safe-area-inset-top) + 12px);
+  right: 12px;
+}
+
+.detail-corps {
+  position: relative;
+  margin-top: -90px;
+  padding: 0 16px 32px;
+}
+
+.detail-entete {
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.detail-affiche {
+  width: 110px;
+  aspect-ratio: 2 / 3;
+  flex-shrink: 0;
+  object-fit: cover;
+  border-radius: 6px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+.detail-affiche.vide {
+  display: grid;
+  place-items: center;
+  background: var(--surface-2);
+  color: var(--gris);
+  font-size: 32px;
+  font-weight: 800;
+}
+
+.detail-titres {
+  min-width: 0;
+}
+
+.detail-titre {
+  margin: 0 0 6px;
+  font-size: 24px;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+
+.detail-infos {
+  margin: 2px 0;
+  font-size: 14px;
+  color: var(--gris);
+}
+
+.detail-note {
   color: var(--jaune);
   font-weight: 700;
 }
-/* Bouton cœur en haut à droite du ticket */
-.ticket-haut {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+
+.detail-section {
+  margin: 22px 0 6px;
+  font-size: 16px;
 }
 
-.ticket-coeur {
-  background: none;
-  border: none;
-  padding: 4px;
-  font-size: 24px;
-  color: var(--gris);
-  cursor: pointer;
-}
-
-.ticket-coeur.actif {
-  color: var(--jaune);
+.detail-texte {
+  margin: 0;
+  line-height: 1.55;
+  color: var(--texte);
+  opacity: 0.9;
 }
