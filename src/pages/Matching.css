@@ -1,0 +1,291 @@
+/* ===== Page Matching ===== */
+
+.matching-titre {
+  margin: 4px 0 4px;
+  font-size: 28px;
+}
+
+.matching-intro {
+  margin: 0 0 20px;
+  color: var(--gris);
+}
+
+.matching-sous-titre {
+  margin: 28px 0 12px;
+  font-size: 18px;
+  color: var(--gris);
+}
+
+.matching-message {
+  padding: 24px 16px;
+  text-align: center;
+  background: var(--surface);
+  border-radius: 10px;
+}
+
+.matching-message h2 {
+  margin: 0 0 8px;
+  font-size: 20px;
+}
+
+.matching-message p {
+  margin: 0;
+  line-height: 1.5;
+  color: var(--gris);
+}
+
+.matching-toggle {
+  margin-bottom: 20px;
+  --track-background-checked: var(--jaune);
+  --handle-background-checked: var(--fond);
+  font-weight: 700;
+}
+
+/* ----- Un match ----- */
+.match {
+  margin-bottom: 24px;
+}
+
+/* Les membres sous le seuil sont plus discrets */
+.match.discret {
+  opacity: 0.55;
+}
+
+/* ----- Le double billet ----- */
+.billet {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 84px minmax(0, 1fr);
+  width: 100%;
+  min-height: 150px;
+  padding: 0;
+  border: none;
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--texte);
+  font: inherit;
+  text-align: center;
+  cursor: pointer;
+}
+
+.billet:focus-visible {
+  outline: 2px solid var(--jaune);
+  outline-offset: 3px;
+}
+
+/* Les deux encoches rondes en haut et en bas, au centre du billet */
+.billet::before,
+.billet::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  width: 22px;
+  height: 22px;
+  margin-left: -11px;
+  background: var(--fond);
+  border-radius: 50%;
+}
+.billet::before { top: -11px; }
+.billet::after { bottom: -11px; }
+
+.billet-moitie {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 0;
+  padding: 18px 8px;
+}
+
+.billet-photo {
+  width: 60px;
+  height: 60px;
+  flex-shrink: 0;
+  object-fit: cover;
+  border: 2px solid var(--jaune);
+  border-radius: 50%;
+}
+
+.billet-photo.vide {
+  display: grid;
+  place-items: center;
+  background: var(--surface-2);
+  color: var(--texte);
+  font-weight: 800;
+  font-size: 24px;
+}
+
+.billet-prenom {
+  max-width: 100%;
+  font-weight: 800;
+  font-size: 16px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.billet-role {
+  font-size: 12px;
+  color: var(--gris);
+}
+
+/* Colonne centrale : les pointillés et le tampon */
+.billet-centre {
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+
+.billet-centre::before {
+  content: '';
+  position: absolute;
+  top: 14px;
+  bottom: 14px;
+  left: 50%;
+  border-left: 2px dashed var(--fond);
+}
+
+/* Le pourcentage, comme un tampon jaune légèrement incliné */
+.billet-tampon {
+  position: relative;
+  display: inline-block;
+  padding: 4px 8px;
+  border: 3px solid var(--jaune);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--jaune);
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 800;
+  font-size: 22px;
+  line-height: 1;
+  transform: rotate(-8deg);
+  box-shadow: inset 0 0 0 2px var(--surface), inset 0 0 0 3px rgba(255, 195, 31, 0.5);
+}
+
+.match.discret .billet-tampon {
+  border-color: var(--gris);
+  color: var(--gris);
+  box-shadow: none;
+}
+
+.billet-tampon.grand {
+  font-size: 34px;
+  padding: 6px 12px;
+}
+
+/* Petites étiquettes des genres en commun */
+.match-genres {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.etiquette-genre {
+  padding: 3px 10px;
+  border-radius: 6px;
+  background: var(--surface-2);
+  color: var(--texte);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* ----- Détail d'un match ----- */
+.detail-match-haut {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: env(safe-area-inset-top);
+}
+
+.detail-match-haut .bouton-rond {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.detail-match-titre {
+  margin: 0;
+  min-width: 0;
+  font-size: 22px;
+  overflow-wrap: anywhere;
+}
+
+.detail-match-score {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 20px 0 8px;
+}
+
+.detail-match-verdict {
+  font-weight: 800;
+  font-size: 18px;
+}
+
+.detail-match-section {
+  margin: 26px 0 10px;
+  font-size: 16px;
+}
+
+.critere {
+  margin-bottom: 14px;
+}
+
+.critere-haut {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+  font-size: 14px;
+}
+
+.critere-nom {
+  font-weight: 700;
+}
+
+.critere-valeur {
+  color: var(--gris);
+}
+
+.critere-barre {
+  height: 10px;
+  overflow: hidden;
+  border-radius: 6px;
+  background: var(--surface-2);
+}
+
+.critere-remplie {
+  height: 100%;
+  border-radius: 6px;
+  background: var(--jaune);
+}
+
+/* Rangée des films en commun : on reprend les cartes de la page Films */
+.detail-match-films {
+  margin: 0 -16px;
+}
+
+.match-affiche {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.detail-match .carte-titre {
+  font-size: 13px;
+}
+
+.detail-match-texte {
+  margin: 0;
+  line-height: 1.5;
+}
+
+.detail-match-vide {
+  margin: 0;
+  color: var(--gris);
+}
