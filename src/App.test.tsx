@@ -10,13 +10,17 @@ vi.mock('./AuthContext', () => ({
 }));
 // Les pages sont remplacées par des marqueurs simples : seul le routage est testé ici
 vi.mock('./pages/Films', () => ({ default: () => <div>Page Films</div> }));
-vi.mock('./pages/Tab2', () => ({ default: () => <div>Page Favoris</div> }));
-vi.mock('./pages/Tab3', () => ({ default: () => <div>Page Matching</div> }));
+vi.mock('./pages/Favoris', () => ({ default: () => <div>Page Favoris</div> }));
+vi.mock('./pages/Matching', () => ({ default: () => <div>Page Matching</div> }));
+vi.mock('./pages/Profil', () => ({ default: () => <div>Page Profil</div> }));
+vi.mock('./pages/Admin', () => ({ default: () => <div>Page Admin</div> }));
 vi.mock('./pages/Login', () => ({ default: () => <div>Page Login</div> }));
 vi.mock('./pages/Register', () => ({ default: () => <div>Page Register</div> }));
 
-function etatAuth(user: { uid: string } | null, loading = false) {
-  vi.mocked(useAuth).mockReturnValue({ user, profil: null, loading, messageDeconnexion: '' } as never);
+function etatAuth(user: { uid: string } | null, loading = false, role?: 'user' | 'admin') {
+  vi.mocked(useAuth).mockReturnValue({
+    user, profil: role ? { role } : null, loading, messageDeconnexion: '',
+  } as never);
 }
 
 function demarrerSur(chemin: string) {
@@ -82,10 +86,63 @@ describe('App — routage', () => {
   it.each([
     ['/tabs/favoris', 'Page Favoris'],
     ['/tabs/matching', 'Page Matching'],
+    ['/tabs/profil', 'Page Profil'],
   ])('un utilisateur connecté accède à %s', async (chemin, page) => {
     etatAuth({ uid: 'u1' });
     demarrerSur(chemin);
 
     expect(await screen.findByText(page)).toBeInTheDocument();
+  });
+});
+
+describe('App — onglet Admin', () => {
+  // Les libellés des onglets sont dans des ion-label : on cherche les boutons d'onglet
+  const ongletAdmin = (container: HTMLElement) => container.querySelector('ion-tab-button[tab="admin"]');
+
+  it('un admin voit l\'onglet Admin', async () => {
+    etatAuth({ uid: 'a1' }, false, 'admin');
+    const { container } = demarrerSur('/tabs/films');
+
+    await screen.findByText('Page Films');
+    expect(ongletAdmin(container)).toBeInTheDocument();
+    expect(ongletAdmin(container)).toHaveAttribute('href', '/tabs/admin');
+  });
+
+  it.each([
+    ['un membre', 'user' as const],
+    ['un profil pas encore chargé', undefined],
+  ])('%s ne voit pas l\'onglet Admin', async (_cas, role) => {
+    etatAuth({ uid: 'u1' }, false, role);
+    const { container } = demarrerSur('/tabs/films');
+
+    await screen.findByText('Page Films');
+    expect(ongletAdmin(container)).not.toBeInTheDocument();
+    expect(container.querySelector('ion-tab-button[tab="profil"]')).toBeInTheDocument();
+  });
+
+  it('un admin accède à /tabs/admin', async () => {
+    etatAuth({ uid: 'a1' }, false, 'admin');
+    demarrerSur('/tabs/admin');
+
+    expect(await screen.findByText('Page Admin')).toBeInTheDocument();
+    expect(window.location.pathname).toBe('/tabs/admin');
+  });
+
+  it('un membre qui ouvre /tabs/admin est redirigé vers /tabs/films', async () => {
+    etatAuth({ uid: 'u1' }, false, 'user');
+    demarrerSur('/tabs/admin');
+
+    expect(await screen.findByText('Page Films')).toBeInTheDocument();
+    await waitFor(() => expect(window.location.pathname).toBe('/tabs/films'));
+    expect(screen.queryByText('Page Admin')).not.toBeInTheDocument();
+  });
+
+  it('un visiteur non connecté qui ouvre /tabs/admin est redirigé vers /login', async () => {
+    etatAuth(null);
+    demarrerSur('/tabs/admin');
+
+    expect(await screen.findByText('Page Login')).toBeInTheDocument();
+    await waitFor(() => expect(window.location.pathname).toBe('/login'));
+    expect(screen.queryByText('Page Admin')).not.toBeInTheDocument();
   });
 });

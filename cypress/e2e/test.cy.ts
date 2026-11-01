@@ -1,6 +1,7 @@
-describe('My First Test', () => {
-  it('Visits the app root url', () => {
+describe('Movie Match', () => {
+  it('affiche la page de connexion au démarrage', () => {
     cy.visit('/')
-    cy.contains('ion-content', 'Tab 1 page')
+    cy.location('pathname').should('eq', '/login')
+    cy.contains('ion-title', 'Connexion')
   })
 })

@@ -4,11 +4,13 @@ import {
   IonTabButton, IonTabs, IonSpinner, setupIonicReact,
 } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import { film, heart, people } from 'ionicons/icons';
+import { film, heart, people, personCircle, shieldCheckmark } from 'ionicons/icons';
 
 import Films from './pages/Films';
-import Tab2 from './pages/Tab2';
-import Tab3 from './pages/Tab3';
+import Favoris from './pages/Favoris';
+import Matching from './pages/Matching';
+import Profil from './pages/Profil';
+import Admin from './pages/Admin';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import { AuthProvider, useAuth } from './AuthContext';
@@ -29,30 +31,50 @@ import './theme/variables.css';
 setupIonicReact();
 
 // Les onglets (chemins relatifs à /tabs)
-const Onglets: React.FC = () => (
-  <IonTabs>
-    <IonRouterOutlet>
-      <Route path="films" element={<Films />} />
-      <Route path="favoris" element={<Tab2 />} />
-      <Route path="matching" element={<Tab3 />} />
-      <Route index element={<Navigate to="films" replace />} />
-    </IonRouterOutlet>
-    <IonTabBar slot="bottom">
-      <IonTabButton tab="films" href="/tabs/films">
-        <IonIcon icon={film} />
-        <IonLabel>Films</IonLabel>
-      </IonTabButton>
-      <IonTabButton tab="favoris" href="/tabs/favoris">
-        <IonIcon icon={heart} />
-        <IonLabel>Favoris</IonLabel>
-      </IonTabButton>
-      <IonTabButton tab="matching" href="/tabs/matching">
-        <IonIcon icon={people} />
-        <IonLabel>Matching</IonLabel>
-      </IonTabButton>
-    </IonTabBar>
-  </IonTabs>
-);
+const Onglets: React.FC = () => {
+  const { profil } = useAuth();
+  const estAdmin = profil?.role === 'admin';
+
+  return (
+    <IonTabs>
+      <IonRouterOutlet>
+        <Route path="films" element={<Films />} />
+        <Route path="favoris" element={<Favoris />} />
+        <Route path="matching" element={<Matching />} />
+        <Route path="profil" element={<Profil />} />
+        <Route
+          path="admin"
+          element={estAdmin ? <Admin /> : <Navigate to="/tabs/films" replace />}
+        />
+        <Route index element={<Navigate to="films" replace />} />
+      </IonRouterOutlet>
+      <IonTabBar slot="bottom">
+        <IonTabButton tab="films" href="/tabs/films">
+          <IonIcon icon={film} />
+          <IonLabel>Films</IonLabel>
+        </IonTabButton>
+        <IonTabButton tab="favoris" href="/tabs/favoris">
+          <IonIcon icon={heart} />
+          <IonLabel>Favoris</IonLabel>
+        </IonTabButton>
+        <IonTabButton tab="matching" href="/tabs/matching">
+          <IonIcon icon={people} />
+          <IonLabel>Matching</IonLabel>
+        </IonTabButton>
+        <IonTabButton tab="profil" href="/tabs/profil">
+          <IonIcon icon={personCircle} />
+          <IonLabel>Profil</IonLabel>
+        </IonTabButton>
+        {estAdmin && (
+          <IonTabButton tab="admin" href="/tabs/admin">
+            <IonIcon icon={shieldCheckmark} />
+            <IonLabel>Admin</IonLabel>
+          </IonTabButton>
+        )}
+      </IonTabBar>
+    </IonTabs>
+  );
+};
 
 const Routes: React.FC = () => {
   const { user, loading } = useAuth();
